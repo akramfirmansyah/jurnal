@@ -1,11 +1,9 @@
-import cv2
 from datetime import datetime
+from constant.directory import images_dir
 
+# import cv2
 # import libcamera
 # from picamera2 import Picamera2
-
-import numpy as np
-from constant.directory import images_dir
 
 
 def capture_image():
