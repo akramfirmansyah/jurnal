@@ -4,13 +4,9 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from datetime import datetime
 from pathlib import Path
-from utils import training
+from utils import training, predict, FuzzyLogic
 
 from controller.captureImageController import capture_image
-from utils.FuzzyLogic import CalculateSprayingDelay
-from utils.adaptiveControll import AdaptiveControll
-
-adap = AdaptiveControll()
 
 # Load environment variables from .env file
 load_dotenv()
@@ -56,7 +52,7 @@ def delay_spray_route():
             400,
         )
 
-    delay = CalculateSprayingDelay(air_temperature, humidity)
+    delay = FuzzyLogic.CalculateSprayingDelay(air_temperature, humidity)
 
     if delay is None:
         return jsonify({"status": "error", "message": "Failed to calculate delay"}), 500
@@ -100,7 +96,7 @@ def predict_route():
     start_prediction = datetime.now()
 
     try:
-        prediction = adap.predict()
+        prediction = predict.predict()
 
         if prediction is None:
             return (
