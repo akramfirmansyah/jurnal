@@ -5,6 +5,7 @@ from datetime import datetime
 # from picamera2 import Picamera2
 
 import numpy as np
+from constant.directory import images_dir
 
 
 def capture_image():
@@ -15,9 +16,7 @@ def capture_image():
         str: The filepath of the captured image if successful, None if failed.
     """
 
-    filepath = (
-        "./public/images/" + datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".jpeg"
-    )
+    filepath = f"{images_dir}" + datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".jpeg"
 
     # cam = Picamera2()
     # camera_config = cam.create_still_configuration(

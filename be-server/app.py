@@ -2,9 +2,15 @@ import os
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
+from datetime import datetime
+from pathlib import Path
+from utils import training
 
 from controller.captureImageController import capture_image
-from controller.delayingSprayController import delaySprayController
+from utils.FuzzyLogic import CalculateSprayingDelay
+from utils.adaptiveControll import AdaptiveControll
+
+adap = AdaptiveControll()
 
 # Load environment variables from .env file
 load_dotenv()
@@ -50,11 +56,89 @@ def delay_spray_route():
             400,
         )
 
-    response = delaySprayController(airTemperature=air_temperature, humidity=humidity)
-    if response is None:
+    delay = CalculateSprayingDelay(air_temperature, humidity)
+
+    if delay is None:
         return jsonify({"status": "error", "message": "Failed to calculate delay"}), 500
 
-    return jsonify({"status": "success", "delay": response}), 200
+    return jsonify({"status": "success", "delay": delay}), 200
+
+
+@app.route("/train", methods=["POST"])
+def train_model():
+    try:
+        start_training = datetime.now()
+
+        training.training_model()
+
+        training_duration = datetime.now() - start_training
+    except Exception as e:
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": f"Training failed: {str(e)}",
+                }
+            ),
+            500,
+        )
+
+    return (
+        jsonify(
+            {
+                "status": "success",
+                "message": "Training completed",
+                "duration": str(training_duration),
+            }
+        ),
+        200,
+    )
+
+
+@app.route("/predict", methods=["POST"])
+def predict_route():
+    start_prediction = datetime.now()
+
+    try:
+        prediction = adap.predict()
+
+        if prediction is None:
+            return (
+                jsonify({"status": "error", "message": "Failed to get prediction"}),
+                500,
+            )
+
+        # Save the prediction to a file
+        filepath = Path("public/prediction/data.csv")
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+        if filepath.exists():
+            prediction.to_csv(filepath, mode="a", header=False)
+        else:
+            prediction.to_csv(filepath)
+
+    except Exception as e:
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": f"Prediction failed: {str(e)}",
+                }
+            ),
+            500,
+        )
+
+    prediction_duration = datetime.now() - start_prediction
+
+    return (
+        jsonify(
+            {
+                "status": "success",
+                "message": "Prediction completed",
+                "duration": str(prediction_duration),
+            }
+        ),
+        200,
+    )
 
 
 if __name__ == "__main__":
