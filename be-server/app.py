@@ -11,7 +11,7 @@ from controller.captureImageController import capture_image
 # Load environment variables from .env file
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="public", static_url_path="/public")
 
 # Custom environment variables
 HOST = os.getenv("HOST", "127.0.0.1")
