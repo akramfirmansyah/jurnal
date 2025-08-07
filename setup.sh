@@ -1,1 +1,1 @@
-docker compose up --rebuild -d
+docker compose up --build -d
