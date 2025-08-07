@@ -1,6 +1,6 @@
 services:
   influxdb:
-    container_name: influxDB
+    container_name: influxDB-jurnal
     image: influxdb:2.6.1
     restart: always
     ports:
