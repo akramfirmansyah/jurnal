@@ -12,6 +12,6 @@ services:
       - DOCKER_INFLUXDB_INIT_ORG=sgh
       - DOCKER_INFLUXDB_INIT_BUCKET=aeroponics
     volumes:
-      - ./influxdb/data:/var/lib/influxdb2
-      - ./influxdb/config:/etc/influxdb2
+      - /home/kohaku/skripsi/Post/influxdb/data:/var/lib/influxdb2
+      - /home/kohaku/skripsi/Post/influxdb/config:/etc/influxdb2
  
