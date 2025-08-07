@@ -8,7 +8,7 @@ docker rmi -f flask-app || true
 docker build -t flask-app .
 
 # Run the Docker container
-docker run -d -p 5000:5000 flask-app --name flask-container
+docker run -d -p 5000:5000 --name flask-container flask-app 
 
 # Print a message indicating that the setup is complete
 echo "Flask application is running in a Docker container on port 5000."
