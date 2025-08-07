@@ -1,21 +1,56 @@
-# Docker file for Flask application
-# This file is used to build the Docker image for the Flask application.
-FROM python:3.11-slim
+# Use Python 3.10 slim image as base
+FROM python:3.10-slim
 
-# Set the working directory
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Set work directory
 WORKDIR /app
 
-# Copy the requirements file
+# Install system dependencies required for OpenCV and other packages
+RUN apt-get update && apt-get install -y \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libglib2.0-0 \
+    libgtk-3-0 \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libv4l-dev \
+    libxvidcore-dev \
+    libx264-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff-dev \
+    gfortran \
+    libblas-dev \
+    liblapack-dev \
+    libatlas-base-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install the dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy the application code
+# Copy application code
 COPY . .
 
-# Expose the port the app runs on
+# Expose port
 EXPOSE 5000
 
-# Define the command to run the application
-CMD ["flask", "run"]
+# Create a non-root user
+RUN adduser --disabled-password --gecos '' appuser && \
+    chown -R appuser:appuser /app
+USER appuser
+
+# Command to run the application
+CMD ["python", "app.py"]
