@@ -46,6 +46,35 @@ def capture_image_route():
         return filepath
 
 
+# Route for get latest image
+@app.route("/latest-image")
+def latest_image():
+    images_dir = Path("public/images")
+    if not images_dir.exists():
+        return (
+            jsonify({"status": "error", "message": "Images directory does not exist"}),
+            404,
+        )
+
+    latest_image = max(images_dir.glob("*.jpeg"), key=os.path.getctime, default=None)
+    if latest_image is None:
+        return (
+            jsonify({"status": "error", "message": "No images found"}),
+            404,
+        )
+
+    return (
+        jsonify(
+            {
+                "status": "success",
+                "image_url": f"/public/images/{latest_image.name}",
+                "timestamp": latest_image.stat().st_ctime,
+            }
+        ),
+        200,
+    )
+
+
 @app.route("/delay-spray", methods=["POST"])
 def delay_spray_route():
     air_temperature = request.json.get("temperature")
