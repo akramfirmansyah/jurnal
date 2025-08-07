@@ -97,10 +97,21 @@ def delay_spray_route():
 
 @app.route("/train", methods=["POST"])
 def train_model():
+    is_hyperparameter_tuning = request.json.get("hyperparameter_tuning", False)
+    if not isinstance(is_hyperparameter_tuning, bool):
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "hyperparameter_tuning must be a boolean",
+                }
+            ),
+            400,
+        )
     try:
         start_training = datetime.now()
 
-        training.training_model()
+        training.training_model(is_hyperparameter_tuning=is_hyperparameter_tuning)
 
         training_duration = datetime.now() - start_training
     except Exception as e:

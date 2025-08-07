@@ -121,54 +121,6 @@ def preprocessing() -> tuple:
 
 
 def create_model(X_train: pd.DataFrame, y_train: pd.DataFrame) -> xgb.XGBRegressor:
-    # search_space = {
-    #     "n_estimators": Integer(100, 1000),
-    #     "learning_rate": Real(0.001, 0.1, prior="log-uniform"),
-    #     "max_depth": Integer(3, 15),
-    #     "subsample": Real(0.5, 1.0),
-    #     "colsample_bytree": Real(0.5, 1.0),
-    #     "gamma": Real(0.0, 5.0),
-    #     "reg_alpha": Real(0.0, 10.0),
-    #     "reg_lambda": Real(0.0, 10.0),
-    # }
-
-    # estimator = xgb.XGBRegressor(eval_metric="rmse", random_state=42)
-
-    # opt = BayesSearchCV(
-    #     estimator,
-    #     search_space,
-    #     n_iter=50,
-    #     cv=5,
-    #     scoring="neg_mean_squared_error",
-    #     random_state=42,
-    # )
-
-    # opt.fit(X_train, y_train)
-
-    # best_params = opt.best_params_
-
-    # # Check if the file exists and has a header
-    # header = list(best_params.keys())
-    # data = list(best_params.values())
-    # filepath = Path("public/model/best_params.csv")
-    # filepath.parent.mkdir(parents=True, exist_ok=True)
-    # if filepath.exists():
-    #     with filepath.open("a") as f:
-    #         f.write(",".join(map(str, data)) + "\n")
-    # else:
-    #     with filepath.open("w") as f:
-    #         f.write(",".join(header) + "\n")
-    #         f.write(",".join(map(str, data)) + "\n")
-
-    # final_model = xgb.XGBRegressor(
-    #     **best_params,
-    #     eval_metric="rmse",
-    #     random_state=42,
-    # )
-    # final_model.fit(X_train, y_train)
-
-    # return final_model
-
     model = xgb.XGBRegressor(
         n_estimators=1000,
         learning_rate=0.01,
@@ -183,6 +135,34 @@ def create_model(X_train: pd.DataFrame, y_train: pd.DataFrame) -> xgb.XGBRegress
     model.fit(X_train, y_train)
 
     return model
+
+
+def create_model_with_hyperparameter_tuning(
+    X_train: pd.DataFrame, y_train: pd.DataFrame
+) -> xgb.XGBRegressor:
+    search_space = {
+        "n_estimators": Integer(100, 1000),
+        "learning_rate": Real(0.01, 0.1, prior="uniform"),
+        "max_depth": Integer(3, 10),
+        "subsample": Real(0.5, 1.0, prior="uniform"),
+        "colsample_bytree": Real(0.5, 1.0, prior="uniform"),
+        "gamma": Real(0, 5, prior="uniform"),
+        "reg_alpha": Real(0, 10, prior="uniform"),
+        "reg_lambda": Real(0, 10, prior="uniform"),
+    }
+
+    opt = BayesSearchCV(
+        xgb.XGBRegressor(),
+        search_space,
+        n_iter=50,
+        cv=3,
+        scoring="neg_mean_absolute_error",
+        n_jobs=-1,
+    )
+
+    opt.fit(X_train, y_train)
+
+    return opt.best_estimator_
 
 
 def save_model(model: xgb.XGBRegressor, model_name: str) -> None:
@@ -229,7 +209,7 @@ def save_matrix(
         writer.writerow(data)
 
 
-def training_model():
+def training_model(is_hyperparameter_tuning: bool = False) -> None:
     df_temp, df_hum = preprocessing()
 
     # Split data to X and y
@@ -250,8 +230,12 @@ def training_model():
         X_hum, y_hum, test_size=0.3, shuffle=False
     )
 
-    model_temp = create_model(X_train_temp, y_train_temp)
-    model_hum = create_model(X_train_hum, y_train_hum)
+    if is_hyperparameter_tuning:
+        model_temp = create_model_with_hyperparameter_tuning(X_train_temp, y_train_temp)
+        model_hum = create_model_with_hyperparameter_tuning(X_train_hum, y_train_hum)
+    else:
+        model_temp = create_model(X_train_temp, y_train_temp)
+        model_hum = create_model(X_train_hum, y_train_hum)
 
     save_model(model_temp, "airTemperature")
     save_model(model_hum, "humidity")
