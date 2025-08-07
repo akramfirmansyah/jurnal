@@ -27,6 +27,10 @@ RUN apt-get update && apt-get install -y \
     liblapack-dev \
     libatlas-base-dev \
     pkg-config \
+    libcamera-dev \
+    libcamera-apps-dev \
+    python3-picamera2 \
+    python3-libcamera \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
