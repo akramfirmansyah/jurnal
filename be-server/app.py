@@ -17,6 +17,9 @@ app = Flask(__name__)
 HOST = os.getenv("HOST", "127.0.0.1")
 PORT = int(os.getenv("PORT", 5000))
 
+app.static_folder = "public"
+app.static_url_path = "/public"
+
 
 @app.route("/")
 def home():
@@ -32,6 +35,9 @@ def capture_image_route():
                 {
                     "status": "success",
                     "message": "Success capturing image",
+                    "filepath": filepath,
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "image_url": f"/public/images/{os.path.basename(filepath)}",
                 }
             ),
             200,
