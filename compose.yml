@@ -24,7 +24,7 @@ services:
       context: be-server
       dockerfile: Dockerfile
     env_file:
-      - ./.env
+      - ./be-server/.env
     depends_on:
       - influxdb
     volumes:
