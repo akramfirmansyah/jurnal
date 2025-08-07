@@ -39,3 +39,8 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# Service files
+*.log
+*.pid
+*.sock
