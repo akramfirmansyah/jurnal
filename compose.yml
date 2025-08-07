@@ -16,7 +16,7 @@ services:
   #     - /home/kohaku/skripsi/Post/influxdb/config:/etc/influxdb2
   
   flask-container:
-    container_name: flask-jurnal
+    container_name: flask-container
     # restart: always
     ports:
       - "5000:5000"
