@@ -26,7 +26,7 @@ def home():
 @app.route("/capture-image")
 def capture_image_route():
     filepath = capture_image()
-    if filepath:
+    if type(filepath) is str:
         return (
             jsonify(
                 {
@@ -37,7 +37,7 @@ def capture_image_route():
             200,
         )
     else:
-        return jsonify({"status": "failed", "message": "Failed to capture image"}), 500
+        return filepath
 
 
 @app.route("/delay-spray", methods=["POST"])

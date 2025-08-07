@@ -4,6 +4,7 @@ from constant.directory import images_dir
 import cv2
 import libcamera
 from picamera2 import Picamera2
+from flask import jsonify
 
 
 def capture_image():
@@ -36,7 +37,12 @@ def capture_image():
         if isDone:
             return filepath
         else:
-            return None
+            return jsonify({"status": "error", "message": "Failed to save image"}), 500
 
-    except Exception:
-        return None
+    except Exception as e:
+        return (
+            jsonify(
+                {"status": "error", "message": f"Failed to capture image: {str(e)}"}
+            ),
+            500,
+        )
