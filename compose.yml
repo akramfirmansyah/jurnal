@@ -1,31 +1,16 @@
 services:
-  # influxdb:
-  #   container_name: influxDB-jurnal
-  #   image: influxdb:2.6.1
-  #   restart: always
-  #   ports:
-  #     - "8086:8086"
-  #   environment:
-  #     - DOCKER_INFLUXDB_INIT_MODE=setup
-  #     - DOCKER_INFLUXDB_INIT_USERNAME=kohaku
-  #     - DOCKER_INFLUXDB_INIT_PASSWORD=kmanjing
-  #     - DOCKER_INFLUXDB_INIT_ORG=sgh
-  #     - DOCKER_INFLUXDB_INIT_BUCKET=aeroponics
-  #   volumes:
-  #     - /home/kohaku/skripsi/Post/influxdb/data:/var/lib/influxdb2
-  #     - /home/kohaku/skripsi/Post/influxdb/config:/etc/influxdb2
-  
-  flask-container:
-    container_name: flask-container
-    # restart: always
+  influxdb:
+    container_name: influxDB-jurnal
+    image: influxdb:2.6.1
+    restart: always
     ports:
-      - "5000:5000"
-    build:
-      context: be-server
-    env_file:
-      - ./be-server/.env
-    # depends_on:
-    #   - influxdb
-    # volumes:
-    #   - /home/kohaku/jurnal/flask-data:/app
- 
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=kohaku
+      - DOCKER_INFLUXDB_INIT_PASSWORD=kmanjing
+      - DOCKER_INFLUXDB_INIT_ORG=sgh
+      - DOCKER_INFLUXDB_INIT_BUCKET=aeroponics
+    volumes:
+      - /home/kohaku/skripsi/Post/influxdb/data:/var/lib/influxdb2
+      - /home/kohaku/skripsi/Post/influxdb/config:/etc/influxdb2
