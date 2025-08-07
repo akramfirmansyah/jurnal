@@ -108,6 +108,12 @@ def train_model():
             ),
             400,
         )
+
+    # Temporary
+    # Always is_hyperparameter_tuning to False
+    if is_hyperparameter_tuning:
+        is_hyperparameter_tuning = False
+
     try:
         start_training = datetime.now()
 

@@ -1,1 +1,7 @@
 influxdb/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
