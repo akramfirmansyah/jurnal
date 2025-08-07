@@ -1,6 +1,9 @@
 # remove the old Docker container if it exists
 docker rm -f flask-container || true
 
+# remove the old Docker image if it exists
+docker rmi -f flask-app || true
+
 # Build the Docker image
 docker build -t flask-app .
 
