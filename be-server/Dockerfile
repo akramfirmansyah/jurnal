@@ -1,11 +1,6 @@
 # Use Python 3.11 slim image as base
 FROM python:3.11-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV DEBIAN_FRONTEND=noninteractive
-
 # Set work directory
 WORKDIR /app
 
@@ -32,6 +27,7 @@ RUN apt-get update && apt-get install -y \
     liblapack-dev \
     libatlas-base-dev \
     pkg-config \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
@@ -43,14 +39,6 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Copy application code
 COPY . .
-
-# Expose port
-EXPOSE 5000
-
-# Create a non-root user
-RUN adduser --disabled-password --gecos '' appuser && \
-    chown -R appuser:appuser /app
-USER appuser
 
 # Command to run the application
 CMD ["python", "app.py"]

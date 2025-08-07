@@ -1,0 +1,45 @@
+# Ignore Docker-related files
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+docker-compose.prod.yml
+docker-compose.dev.yml
+docker-compose.test.yml
+docker-compose.local.yml
+docker-compose.staging.yml
+docker-compose.prod.override.yml
+docker-compose.dev.override.yml
+docker-compose.test.override.yml
+docker-compose.local.override.yml
+docker-compose.staging.override.yml 
+
+# Ignore IDE and editor specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+*.vscode
+*.code-workspace    
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.orig
+*.DS_Store  
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd   
+
+# Ignore virtual environments
+venv/
+.env
+.env.local
+.env.development
+.env.test
+.env.production 
