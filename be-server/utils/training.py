@@ -120,56 +120,69 @@ def preprocessing() -> tuple:
     return df_airTemp, df_humidity
 
 
-def create_model(
-    self, X_train: pd.DataFrame, y_train: pd.DataFrame
-) -> xgb.XGBRegressor:
-    search_space = {
-        "n_estimators": Integer(100, 1000),
-        "learning_rate": Real(0.001, 0.1, prior="log-uniform"),
-        "max_depth": Integer(3, 15),
-        "subsample": Real(0.5, 1.0),
-        "colsample_bytree": Real(0.5, 1.0),
-        "gamma": Real(0.0, 5.0),
-        "reg_alpha": Real(0.0, 10.0),
-        "reg_lambda": Real(0.0, 10.0),
-    }
+def create_model(X_train: pd.DataFrame, y_train: pd.DataFrame) -> xgb.XGBRegressor:
+    # search_space = {
+    #     "n_estimators": Integer(100, 1000),
+    #     "learning_rate": Real(0.001, 0.1, prior="log-uniform"),
+    #     "max_depth": Integer(3, 15),
+    #     "subsample": Real(0.5, 1.0),
+    #     "colsample_bytree": Real(0.5, 1.0),
+    #     "gamma": Real(0.0, 5.0),
+    #     "reg_alpha": Real(0.0, 10.0),
+    #     "reg_lambda": Real(0.0, 10.0),
+    # }
 
-    estimator = xgb.XGBRegressor(eval_metric="rmse", random_state=42)
+    # estimator = xgb.XGBRegressor(eval_metric="rmse", random_state=42)
 
-    opt = BayesSearchCV(
-        estimator,
-        search_space,
-        n_iter=50,
-        cv=5,
-        scoring="neg_mean_squared_error",
-        random_state=42,
+    # opt = BayesSearchCV(
+    #     estimator,
+    #     search_space,
+    #     n_iter=50,
+    #     cv=5,
+    #     scoring="neg_mean_squared_error",
+    #     random_state=42,
+    # )
+
+    # opt.fit(X_train, y_train)
+
+    # best_params = opt.best_params_
+
+    # # Check if the file exists and has a header
+    # header = list(best_params.keys())
+    # data = list(best_params.values())
+    # filepath = Path("public/model/best_params.csv")
+    # filepath.parent.mkdir(parents=True, exist_ok=True)
+    # if filepath.exists():
+    #     with filepath.open("a") as f:
+    #         f.write(",".join(map(str, data)) + "\n")
+    # else:
+    #     with filepath.open("w") as f:
+    #         f.write(",".join(header) + "\n")
+    #         f.write(",".join(map(str, data)) + "\n")
+
+    # final_model = xgb.XGBRegressor(
+    #     **best_params,
+    #     eval_metric="rmse",
+    #     random_state=42,
+    # )
+    # final_model.fit(X_train, y_train)
+
+    # return final_model
+
+    model = xgb.XGBRegressor(
+        n_estimators=1000,
+        learning_rate=0.01,
+        max_depth=10,
+        subsample=1,
+        colsample_bytree=1,
+        gamma=2.5,
+        reg_alpha=0,
+        reg_lambda=7,
     )
 
-    opt.fit(X_train, y_train)
+    model.fit(X_train, y_train)
 
-    best_params = opt.best_params_
-
-    # Check if the file exists and has a header
-    header = list(best_params.keys())
-    data = list(best_params.values())
-    filepath = Path("public/model/best_params.csv")
-    filepath.parent.mkdir(parents=True, exist_ok=True)
-    if filepath.exists():
-        with filepath.open("a") as f:
-            f.write(",".join(map(str, data)) + "\n")
-    else:
-        with filepath.open("w") as f:
-            f.write(",".join(header) + "\n")
-            f.write(",".join(map(str, data)) + "\n")
-
-    final_model = xgb.XGBRegressor(
-        **best_params,
-        eval_metric="rmse",
-        random_state=42,
-    )
-    final_model.fit(X_train, y_train)
-
-    return final_model
+    return model
 
 
 def save_model(model: xgb.XGBRegressor, model_name: str) -> None:
