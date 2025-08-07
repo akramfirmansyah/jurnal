@@ -94,9 +94,16 @@ def train_model():
 @app.route("/predict", methods=["POST"])
 def predict_route():
     start_prediction = datetime.now()
+    start_date = request.json.get("start_date")
+
+    if not start_date:
+        return (
+            jsonify({"status": "error", "message": "Missing start_date parameter"}),
+            400,
+        )
 
     try:
-        prediction = predict.predict()
+        prediction = predict.predict(start_date)
 
         if prediction is None:
             return (

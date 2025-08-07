@@ -15,8 +15,12 @@ def load_model(filepath: str) -> xgb.XGBRegressor:
     return model
 
 
-def single_predict(model: xgb.XGBRegressor, column_name: str) -> pd.DataFrame:
-    startdate = datetime.now().strftime("%Y-%m-%d, %H:%M:00")
+def single_predict(
+    model: xgb.XGBRegressor, column_name: str, start_date: str
+) -> pd.DataFrame:
+    startdate = (
+        start_date if start_date else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
     date_range = pd.date_range(start=startdate, periods=(60 * 24), freq="min")
 
     df_future = pd.DataFrame({"datetime": date_range})
@@ -28,16 +32,16 @@ def single_predict(model: xgb.XGBRegressor, column_name: str) -> pd.DataFrame:
     return df_future[[f"{column_name}"]]
 
 
-def predict() -> pd.DataFrame:
+def predict(start_date: str) -> pd.DataFrame:
     model_temperature = load_model(f"{model_dir}XGBoost_airTemperature.pkl")
     model_humidity = load_model(f"{model_dir}XGBoost_humidity.pkl")
 
-    df_temperature = single_predict(model_temperature, "airTemperature")
-    df_humidity = single_predict(model_humidity, "humidity")
+    df_temperature = single_predict(model_temperature, "airTemperature", start_date)
+    df_humidity = single_predict(model_humidity, "humidity", start_date)
 
     df = pd.concat([df_temperature, df_humidity], axis=1)
 
-    filepath = Path(f"{predict_dir}data.csv")
+    filepath = Path(f"{predict_dir}{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv")
     filepath.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(filepath, index=True)
 
