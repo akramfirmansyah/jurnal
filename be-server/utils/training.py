@@ -156,8 +156,8 @@ def create_model_with_hyperparameter_tuning(
         search_space,
         n_iter=50,
         cv=3,
-        scoring="neg_mean_absolute_error",
-        n_jobs=-1,
+        scoring="neg_mean_squared_error",
+        n_jobs=1,
     )
 
     opt.fit(X_train, y_train)
